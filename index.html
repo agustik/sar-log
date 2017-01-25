@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="sar-log">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ title }}</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="lib/css/bootstrap.min.css">
+    <link rel="stylesheet" href="lib/css/font-awesome.min.css">
+    <link rel="stylesheet" href="lib/css/select.min.css">
+
+    <link rel="stylesheet" href="dist/css/application.min.css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.2/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body ng-controller="elasticsearch">
+
+
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <form class="form-horizontal" ng-submit="postLog()">
+
+            <div class="form-group">
+              <label >Lýsing</label>
+              <input name="name" type="text" class="form-control" placeholder="Lýsing" ng-model="form.name">
+            </div>
+            <div class="form-group">
+              <label >Dagsetning</label>
+
+              <div class="input-group">
+                <input type="text" class="form-control"
+                        name="timestamp"
+                        uib-datepicker-popup="{{format}}"
+                        ng-model="form.timestamp"
+                        datepicker-options="dateOptions"
+                        ng-required="true"
+                        is-open="datepickerOpen"
+                        close-text="Close" />
+                <span class="input-group-btn">
+                  <button type="button" class="btn btn-default" ng-click="datepickerOpen =!datepickerOpen"><i class="fa fa-calendar"></i></button>
+                </span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label >Tímar</label>
+              <input only-digits  ng-model="form.hours" value="1" name="hours" type="number" class="form-control" placeholder="Tímar">
+            </div>
+
+            <div class="form-group ">
+              <ui-select multiple theme="bootstrap"
+                ng-disabled="ctrl.disabled"
+                ng-model="form.tags"
+                close-on-select="false"
+                title="Veldu tögg">
+                <ui-select-match placeholder="Veldu tögg">{{$item}}</ui-select-match>
+                <ui-select-choices repeat="item in tags | filter:$select.search">
+                  {{item}}
+                </ui-select-choices>
+              </ui-select>
+            </div>
+
+            <div class="form-group ">
+              <ui-select multiple theme="bootstrap"
+                ng-disabled="ctrl.disabled"
+                close-on-select="false"
+                ng-model="form.users"
+                title="Veldu björgunarmenn">
+                <ui-select-match placeholder="Veldu björgunarmenn">{{$item}}</ui-select-match>
+                <ui-select-choices repeat="item in users | filter:$select.search">
+                  {{item}}
+                </ui-select-choices>
+              </ui-select>
+            </div>
+            <div class="form-group">
+              <label >Nánari lýsing</label>
+              <textarea name="description" ng-model="form.description" class="form-control" rows="5"></textarea>
+
+            </div>
+            <div class="form-group">
+              <button name="button" class="btn btn-default">Skra</button>
+            </div>
+          </form>
+          <!-- <ui-select ng-model="selected.value">
+            <ui-select-match>
+                <span ng-bind="$select.selected.name"></span>
+            </ui-select-match>
+            <ui-select-choices repeat="item in (itemArray | filter: $select.search) track by item.id">
+                <span ng-bind="item.name"></span>
+            </ui-select-choices>
+        </ui-select> -->
+        </div>
+        <div class="col-md-6">
+          loggur
+
+          {{ form }}
+        </div>
+      </div>
+    </div>
+
+    <script src="dist/js/libs.js"></script>
+
+    <script src="dist/js/application.min.js"></script>
+  </body>
+</html>
