@@ -6,12 +6,19 @@ var app = angular.module('sar-log', [
 
 
 app.run([ '$rootScope', function ($rootScope){
-  $rootScope.es_index="bfa";
-  $rootScope.es_type="useractivity";
-  $rootScope.es_server = "http://localhost:9200";
+
+
+
+  for (var key in config){
+    $rootScope[key] = config[key];
+
+  }
+
+  $rootScope.config = config;
+
 }]);
 
-app.controller('createLog', ['$scope', '$http', '$timeout','$rootScope', 'utils', controllerCreateLog ]);
+app.controller('createLog', ['$scope', '$http', '$timeout','$rootScope', 'utils',  '$uibModalInstance', 'data', controllerCreateLog ]);
 app.controller('displayLog', ['$scope', '$http', '$timeout','$rootScope', '$uibModal', 'utils', controllerDisplayLog ]);
 app.controller('addUserModal', ['$scope', '$http', '$uibModalInstance','data','utils', '$rootScope', controllerAddUserModal]);
 

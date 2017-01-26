@@ -1,0 +1,5 @@
+var config = {
+  es_index : "",
+  es_type : "",
+  es_server : "http://localhost:9200"
+};

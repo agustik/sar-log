@@ -2,7 +2,9 @@
 
 function controllerDisplayLog($scope, $http, $timeout, $rootScope, $uibModal, utils){
 
+
   $scope.activity = [];
+
 
   utils.fetchLog(function (res){
     if (res.status >= 200 && res.status < 300 ){
@@ -11,8 +13,8 @@ function controllerDisplayLog($scope, $http, $timeout, $rootScope, $uibModal, ut
     }
   });
 
-  $rootScope.$on('sar::newlog', function (ev, data, response){
-    console.log('sar::newlog', data, response);
+  $rootScope.$on('sar::newRecord', function (ev, data, response){
+    console.log('sar::newRecord', data, response);
     console.log('I should fetch a single record with id', response.data._id);
     utils.fetchSingleRecord(response.data._id, function (res){
       if (res.status >= 200 && res.status < 300 ){
@@ -33,6 +35,22 @@ function controllerDisplayLog($scope, $http, $timeout, $rootScope, $uibModal, ut
     });
   });
 
+  $scope.openCreateModal = function (item){
+    var modalInstance = $uibModal.open({
+      templateUrl: 'templates/createlog.html',
+      controller: 'createLog',
+      size : 'lg',
+      resolve: {
+        data: function () {
+          return item;
+        }
+      }
+    });
+
+    modalInstance.result.then(function (selectedItem) {
+      }, function () {
+    });
+  }
 
 
   $scope.deleteRecord = function (id, item){
@@ -56,19 +74,19 @@ function controllerDisplayLog($scope, $http, $timeout, $rootScope, $uibModal, ut
 
   $scope.addUser = function (item){
     var modalInstance = $uibModal.open({
-    templateUrl: 'templates/addUserModal.html',
-    controller: 'addUserModal',
+      templateUrl: 'templates/addUserModal.html',
+      controller: 'addUserModal',
 
-    resolve: {
-      data: function () {
-        return item;
+      resolve: {
+        data: function () {
+          return item;
+        }
       }
-    }
-  });
+    });
 
-  modalInstance.result.then(function (selectedItem) {
-    }, function () {
-  });
+    modalInstance.result.then(function (selectedItem) {
+      }, function () {
+    });
 
   };
 }

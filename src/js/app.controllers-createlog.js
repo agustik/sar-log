@@ -2,24 +2,60 @@
 
 */
 
-function controllerCreateLog($scope, $http, $timeout, $rootScope, utils ){
+function controllerCreateLog($scope, $http, $timeout, $rootScope, utils, $uibModalInstance, data ){
   $scope.datepickerOpen = false;
+  $scope.isPosting = false;
+
+  $scope.recordID= "";
+
+  $scope.editRecord = false;
+  if (data){
+    $scope.form = loadExisting(angular.copy(data));
+    $scope.recordID= data._id;
+    $scope.editRecord = true;
+
+
+  }else{
+    $scope.form = defaultForm();
+    data = {};
+  }
+
+
 
   $scope.format = "dd.MM.yyyy HH:mm";
 
   $scope.users = [];
   $scope.tags = [];
 
-  function createID(){
-    var d = new Date();
-
-    var id = d.getTime() / 1000;
-    return id.toFixed();
-  }
-
   $scope.createTag = function (string){
     return { name : string };
   };
+
+  function loadExisting(object){
+
+    var obj = object._source;
+
+    for (var key in obj){
+      var value = obj[key];
+      if (Array.isArray(value)){
+        obj[key] = value.map(function (name) { return { name : name }});
+      }
+    }
+
+
+    if (obj.timestamp){
+      obj.timestamp = new Date(obj.timestamp);
+    }
+
+
+    console.log(obj);
+    return obj;
+  }
+
+
+  function createTags(arr){
+
+  }
 
   function defaultForm () {
     return {
@@ -27,7 +63,6 @@ function controllerCreateLog($scope, $http, $timeout, $rootScope, utils ){
       hours : 1
     };
   }
-  $scope.form = defaultForm();
 
   function fetchUsers(){
     var users = [];
@@ -53,24 +88,40 @@ function controllerCreateLog($scope, $http, $timeout, $rootScope, utils ){
   fetchUsers();
   fetchTags();
 
+  $scope.close = function (){
+    $uibModalInstance.close();
+  };
+
   $scope.postLog = function (){
 
-    var id = createID();
-    //$scope.form._id = createID();
-    $scope.form.created = new Date();
+    console.log($scope.createLog.name);
+    if ($scope.createLog.$invalid) return;
+
+    var id = $scope.recordID;
+
+    $scope.isPosting = true;
+
+
+    if (!$scope.form.created){
+      $scope.form.created = new Date();
+    }
+
+    $scope.form.edit = new Date();
+
+    $scope.form.epoch = new Date().getTime();
 
     var postData = utils.transFormTags($scope.form);
     utils.submitElasticsearch(postData, id, function (res){
       console.log('Res from post', res);
 
       if (res.status >= 200 && res.status < 300){
-        $scope.form = defaultForm();
-        $timeout(function (){
-          fetchUsers();
-          fetchTags();
-        }, 1000);
+        $uibModalInstance.close();
 
-        $rootScope.$emit('sar::newlog', postData, res);
+        if ( $scope.editRecord ){
+          $rootScope.$emit('sar::updateRecord', postData, res);
+        }else{
+          $rootScope.$emit('sar::newRecord', postData, res);
+        }
       }
     });
   }

@@ -1,0 +1,47 @@
+{
+  "mappings": {
+    "useractivity": {
+      "properties": {
+        "created": {
+          "type": "date"
+        },
+        "hours": {
+          "type": "long"
+        },
+        "name": {
+          "type": "text",
+          "fielddata": true,
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "tags": {
+          "type": "text",
+          "fielddata": true,
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "timestamp": {
+          "type": "date"
+        },
+        "users": {
+          "type": "text",
+          "fielddata": true,
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        }
+      }
+    }
+  }
+}

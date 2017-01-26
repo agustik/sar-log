@@ -11,7 +11,7 @@
             ng-model="form.users"
             title="Veldu björgunarmenn">
             <ui-select-match placeholder="Veldu björgunarmenn">{{$item.name}}</ui-select-match>
-            <ui-select-choices repeat="item in users | filter:$select.search">
+            <ui-select-choices repeat="item in users | filter:$select.search:false">
               {{item.name}}
             </ui-select-choices>
           </ui-select>
@@ -20,8 +20,8 @@
       </form>
       <div class="">
         <h4>Quick add, virkir notendur</h4>
-        <div class="" ng-repeat="item in activeUsers">
-          <button class="btn btn-block btn-success" ng-click="quickAdd(item.name)" >
+        <div class="">
+          <button  ng-repeat="item in activeUsers" class="btn btn-block btn-success" ng-click="quickAdd(item.name)" >
             {{item.name}}
           </button>
         </div>

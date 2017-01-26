@@ -1,0 +1,72 @@
+
+<div>
+    <div class="modal-header">
+        <h3 class="modal-title" id="modal-title">Stofna verkefni</h3>
+    </div>
+    <div class="modal-body" id="modal-body">
+      <form class="form-horizontal" name="createLog" ng-submit="postLog()">
+
+        <div class="form-group" ng-class="( createLog.name.$touched && createLog.name.$error.required) ? 'has-error' : ''">
+          <label >Lýsing</label>
+          <input name="name" required type="text" class="form-control" placeholder="Lýsing" ng-model="form.name">
+        </div>
+        <div class="form-group">
+          <label >Dagsetning</label>
+
+          <div class="input-group">
+            <input type="text" class="form-control"
+                    name="timestamp"
+                    uib-datepicker-popup="{{format}}"
+                    ng-model="form.timestamp"
+                    datepicker-options="dateOptions"
+                    ng-required="true"
+                    is-open="datepickerOpen"
+                    close-text="Close" />
+            <span class="input-group-btn">
+              <button type="button" class="btn btn-default" ng-click="datepickerOpen =!datepickerOpen"><i class="fa fa-calendar"></i></button>
+            </span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label >Tímar</label>
+          <input only-digits  ng-model="form.hours" value="1" name="hours" type="number" class="form-control" placeholder="Tímar">
+        </div>
+
+        <div class="form-group ">
+          <ui-select multiple theme="bootstrap"
+            ng-model="form.tags"
+            tagging="createTag"
+            close-on-select="false"
+            title="Veldu tögg">
+            <ui-select-match placeholder="Veldu tögg">{{$item.name}}</ui-select-match>
+            <ui-select-choices repeat="item in tags | filter:$select.search:false">
+              {{item.name}}
+            </ui-select-choices>
+          </ui-select>
+        </div>
+
+        <div class="form-group ">
+          <ui-select multiple theme="bootstrap"
+            tagging="createTag"
+            close-on-select="false"
+            ng-model="form.users"
+            title="Veldu björgunarmenn">
+            <ui-select-match placeholder="Veldu björgunarmenn">{{$item.name}}</ui-select-match>
+            <ui-select-choices repeat="item in users | filter:$select.search:false">
+              {{item.name}}
+            </ui-select-choices>
+          </ui-select>
+        </div>
+        <div class="form-group">
+          <label >Nánari lýsing</label>
+          <textarea name="description" ng-model="form.description" class="form-control" rows="5"></textarea>
+        </div>
+        <button name="button" clasS="hidden" type="submit"></button>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-success" type="button" ng-click="postLog()" ng-disabled="isPosting">Srká <i ng-show="isPosting" class="fa fa-spinner fa-spin"></i></button>
+      <button class="btn btn-warning" type="button" ng-click="close()">Loka</button>
+    </div>
+</div>

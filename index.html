@@ -21,110 +21,61 @@
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
   </head>
-  <body >
+  <body ng-controller="displayLog" >
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="btn btn-danger navbar-btn" ng-click="openCreateModal()">Nýtt verkefni</button>
+        </div>
 
-
-    <div class="container">
-      <div class="row">
-        <div class="col-md-6" ng-controller="createLog">
-          <form class="form-horizontal" ng-submit="postLog()">
-
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <form class="navbar-form navbar-left">
             <div class="form-group">
-              <label >Lýsing</label>
-              <input name="name" type="text" class="form-control" placeholder="Lýsing" ng-model="form.name">
-            </div>
-            <div class="form-group">
-              <label >Dagsetning</label>
-
-              <div class="input-group">
-                <input type="text" class="form-control"
-                        name="timestamp"
-                        uib-datepicker-popup="{{format}}"
-                        ng-model="form.timestamp"
-                        datepicker-options="dateOptions"
-                        ng-required="true"
-                        is-open="datepickerOpen"
-                        close-text="Close" />
-                <span class="input-group-btn">
-                  <button type="button" class="btn btn-default" ng-click="datepickerOpen =!datepickerOpen"><i class="fa fa-calendar"></i></button>
-                </span>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label >Tímar</label>
-              <input only-digits  ng-model="form.hours" value="1" name="hours" type="number" class="form-control" placeholder="Tímar">
-            </div>
-
-            <div class="form-group ">
-              <ui-select multiple theme="bootstrap"
-                ng-model="form.tags"
-                tagging="createTag"
-                close-on-select="false"
-                title="Veldu tögg">
-                <ui-select-match placeholder="Veldu tögg">{{$item.name}}</ui-select-match>
-                <ui-select-choices repeat="item in tags | filter:$select.search">
-                  {{item.name}}
-                </ui-select-choices>
-              </ui-select>
-            </div>
-
-            <div class="form-group ">
-              <ui-select multiple theme="bootstrap"
-                tagging="createTag"
-                close-on-select="false"
-                ng-model="form.users"
-                title="Veldu björgunarmenn">
-                <ui-select-match placeholder="Veldu björgunarmenn">{{$item.name}}</ui-select-match>
-                <ui-select-choices repeat="item in users | filter:$select.search">
-                  {{item.name}}
-                </ui-select-choices>
-              </ui-select>
-            </div>
-            <div class="form-group">
-              <label >Nánari lýsing</label>
-              <textarea name="description" ng-model="form.description" class="form-control" rows="5"></textarea>
-
-            </div>
-            <div class="form-group">
-              <button name="button" class="btn btn-default">Skra</button>
+              <input type="text" class="form-control" ng-model="queryString" placeholder="Search">
             </div>
           </form>
+        </div><!-- /.navbar-collapse -->
+      </div>
+    </nav>
 
-          loggur
+    <div class="container-fluid">
 
-          {{ form }}
-          <!-- <ui-select ng-model="selected.value">
-            <ui-select-match>
-                <span ng-bind="$select.selected.name"></span>
-            </ui-select-match>
-            <ui-select-choices repeat="item in (itemArray | filter: $select.search) track by item.id">
-                <span ng-bind="item.name"></span>
-            </ui-select-choices>
-        </ui-select> -->
-        </div>
-        <div class="col-md-6" ng-controller="displayLog">
-          <div class="" ng-repeat="item in activity | orderBy:'_id':true ">
-            <div class="well well-sm">
-              <div class="pull-right">
-                <button type="button" class="btn btn-warning btn-xs" name="button" ng-click="editRecord(item._id)"><i class="fa fa-wrench"></i></button>
+        <div class="col-md-12">
+          <div class="" ng-repeat="item in activity | orderBy:'epoch':true  | filter:queryString">
 
-                <button type="button" class="btn btn-danger btn-xs" name="button" ng-click="deleteRecord(item._id, item)"><i class="fa fa-remove"></i></button>
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title">
+                  {{ item._source.name }} - {{ item._source.timestamp | date:'dd.MM.yyyy HH:mm' }}
+                  <span class="label label-danger">{{item._source.hours}} klst</span>
+                  <div class="pull-right">
+                    <button uib-tooltip="Breyta færslu" type="button" class="btn btn-warning btn-xs" name="button" ng-click="openCreateModal(item)"><i class="fa fa-wrench"></i></button>
+                    <button uib-tooltip="Eyða færslu" type="button" class="btn btn-danger btn-xs" name="button" ng-click="deleteRecord(item._id, item)"><i class="fa fa-remove"></i></button>
+                    <button uib-tooltip="Bæta notenda við færslu" type="button" name="button" class="btn-primary btn btn-xs" ng-click="addUser(item)"><i class="fa fa-plus"></i></button>
+
+                  </div>
+                </h3>
               </div>
-              <h4>{{ item._source.name }}</h4> {{item._id}}  <span class="pull-right"> {{ item._source.timestamp | date:'dd.MM.yyyy HH:mm' }}</span>
-              <div class="">
-                <span ng-repeat="user in item._source.users"> <span class="label label-success">{{ user }}</span></span>
-                <button type="button" name="button" class="btn-primary btn btn-xs" ng-click="addUser(item)"><i class="fa fa-plus"></i></button>
-              </div>
-              <div class="">
-                <span ng-repeat="tag in item._source.tags"> <span class="label label-info">{{ tag }}</span></span>
+              <div class="panel-body">
+                <div class="">
+
+                </div>
+                <!-- List group -->
+                <ul class="list-group">
+                  <li class="list-group-item">
+                      <span ng-repeat="user in item._source.users"> <span class="label label-success">{{ user }}</span></span>
+                  </li>
+                  <li class="list-group-item">
+                    <span ng-repeat="tag in item._source.tags"> <span class="label label-info">{{ tag }}</span></span>
+                  </li>
+                  <li class="list-group-item" ng-hide="(!item._source.description)">Lýsing: {{item._source.description}}</li>
+                </ul>
               </div>
             </div>
           </div>
         </div>
-      </div>
     </div>
-
+    <script src="config.js"></script>
     <script src="dist/js/libs.js"></script>
 
     <script src="dist/js/application.min.js"></script>

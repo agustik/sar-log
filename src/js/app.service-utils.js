@@ -8,12 +8,13 @@ function serviceUtils($http, $rootScope, $uibModal){
   return {
     fetchAggrigate : function(field, callback){
 
-      var data = {
+    var data = {
        "size": 0,
        "aggs": {
          "request": {
            "terms": {
-             "field": field + ".keyword"
+             "field": field + ".keyword",
+             "size" : 100
            }
          }
        }
@@ -99,7 +100,7 @@ function serviceUtils($http, $rootScope, $uibModal){
       return $uibModal.open({
         templateUrl: 'templates/confirm.html',
         controller: 'confirmModal',
-    
+
         resolve: {
           data: function () {
             return data;
