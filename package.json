@@ -9,14 +9,18 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bodybuilder": "^1.24.0"
+    "bodybuilder": "^1.24.0",
+    "grunt": "^1.0.1"
   },
   "devDependencies": {
+    "connect": "^3.5.0",
     "grunt-contrib-clean": "^1.0.0",
     "grunt-contrib-concat": "^1.0.1",
+    "grunt-contrib-connect": "^1.0.2",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-cssmin": "^1.0.2",
     "grunt-contrib-uglify": "^2.0.0",
-    "grunt-contrib-watch": "^1.0.0"
+    "grunt-contrib-watch": "^1.0.0",
+    "serve-static": "^1.11.2"
   }
 }

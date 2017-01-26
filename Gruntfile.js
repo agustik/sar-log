@@ -167,6 +167,8 @@ module.exports = function (grunt) {
 
   grunt.registerTask('default', ['concat', 'uglify', 'copy', 'cssmin']);
 
+
+
   //grunt.registerTask('build', ['concat', 'uglify', 'auto_install','copy', 'clean']);
   // grunt.registerTask('pack', ['concat', 'uglify', 'auto_install','copy', 'rpm']);
 };
