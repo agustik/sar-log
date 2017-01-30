@@ -47,8 +47,6 @@ function controllerCreateLog($scope, $http, $timeout, $rootScope, utils, $uibMod
       obj.timestamp = new Date(obj.timestamp);
     }
 
-
-    console.log(obj);
     return obj;
   }
 
@@ -93,8 +91,6 @@ function controllerCreateLog($scope, $http, $timeout, $rootScope, utils, $uibMod
   };
 
   $scope.postLog = function (){
-
-    console.log($scope.createLog.name);
     if ($scope.createLog.$invalid) return;
 
     var id = $scope.recordID;
@@ -112,15 +108,13 @@ function controllerCreateLog($scope, $http, $timeout, $rootScope, utils, $uibMod
 
     var postData = utils.transFormTags($scope.form);
     utils.submitElasticsearch(postData, id, function (res){
-      console.log('Res from post', res);
-
       if (res.status >= 200 && res.status < 300){
         $uibModalInstance.close();
 
         if ( $scope.editRecord ){
-          $rootScope.$emit('sar::updateRecord', postData, res);
+          $rootScope.$emit('sar::updateRecord', { request: postData, response: res });
         }else{
-          $rootScope.$emit('sar::newRecord', postData, res);
+          $rootScope.$emit('sar::newRecord',    { request: postData, response: res });
         }
       }
     });

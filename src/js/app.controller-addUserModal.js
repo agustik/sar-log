@@ -11,12 +11,16 @@ function controllerAddUserModal($scope, $http, $uibModalInstance,  data, utils, 
     //
     var form = angular.copy($scope.form);
 
+    if (form.users.length < 1)  {
+      console.log('No users to add');
+      return $uibModalInstance.close();
+    }
+
     data._source.users.forEach(function (user){
       form.users.push({ name : user});
-    })
+    });
 
     var d = utils.transFormTags(form);
-    console.log(d, data);
 
     var id = data._id;
     var requestData = {
@@ -24,14 +28,14 @@ function controllerAddUserModal($scope, $http, $uibModalInstance,  data, utils, 
     };
 
     utils.updateRecord(id, requestData, function (res){
-      console.log(res);
 
-      $rootScope.$emit('sar::updateRecord', requestData, res);
+      $rootScope.$emit('sar::updateRecord', { request :  requestData, response : res});
+
+      $uibModalInstance.close();
     });
   };
 
   $scope.quickAdd = function (user){
-    console.log(user);
     var id = data._id;
 
     var requestData = {
@@ -56,7 +60,7 @@ function controllerAddUserModal($scope, $http, $uibModalInstance,  data, utils, 
         });
 
 
-        $rootScope.$emit('sar::updateRecord', requestData, res);
+        $rootScope.$emit('sar::updateRecord', { request :  requestData, response : res});
       }
 
 

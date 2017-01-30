@@ -13,8 +13,9 @@ module.exports = function (grunt) {
             "lib/js/angular-sanitize.min.js",
 
             "lib/js/ui-bootstrap.min.js",
-            "lib/js/ui-bootstrap-tpls.min.js"
-          ],
+            "lib/js/ui-bootstrap-tpls.min.js",
+            'lib/js/socket.io.min.js'
+        ],
           dest : 'dist/js/libs.js'
         }
       },
@@ -47,7 +48,7 @@ module.exports = function (grunt) {
               dest: 'lib/js/', filter: 'isFile'},
 
             // ui-bootstrap-templates
-            {expand: true, flatten:true, src: [], dest: 'lib/js/', filter: 'isFile'},
+            //{expand: true, flatten:true, src: [], dest: 'lib/js/', filter: 'isFile'},
 
             //boostrap css
             {expand: true, flatten:true, src: [
@@ -98,6 +99,11 @@ module.exports = function (grunt) {
             {expand: true, flatten:true, src: [
               'bower_components/angular-sanitize/angular-sanitize.min.js'
             ], dest: 'lib/js/', filter: 'isFile'},
+            {expand: true, flatten:true, src: [
+              'bower_components/socket.io-client/dist/socket.io.min.js'
+            ], dest: 'lib/js/', filter: 'isFile'},
+
+
             // // UI Select
             // {expand: true, flatten:true, src: [
             //   'bower_components/ui-select/dist/*.min.css'

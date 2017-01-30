@@ -5,17 +5,33 @@ var app = angular.module('sar-log', [
 ]);
 
 
-app.run([ '$rootScope', function ($rootScope){
-
-
+app.run([ '$rootScope', '$log', function ($rootScope, $log){
 
   for (var key in config){
     $rootScope[key] = config[key];
 
   }
 
+  $rootScope.eventsToProxy = ['sar::newRecord', 'sar::updateRecord'];
+
+
   $rootScope.config = config;
 
+  var socket = io(config.websocketServer);
+
+  socket.on('webSocketProxy', function (eventName ,eventData){
+    $log.info('webSocketProxy', eventName);
+    $rootScope.$emit(eventName, eventData, 'proxy');
+  });
+
+
+  $rootScope.eventsToProxy.forEach(function (eventName){
+    $rootScope.$on(eventName, function (ev, eventData, type){
+      if (type === 'proxy')  return;
+      $log.info('Anglar Event to Proxy', eventName);
+      socket.emit('webSocketProxy', eventName, eventData);
+    });
+  });
 }]);
 
 app.controller('createLog', ['$scope', '$http', '$timeout','$rootScope', 'utils',  '$uibModalInstance', 'data', controllerCreateLog ]);
