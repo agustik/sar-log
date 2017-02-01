@@ -23,6 +23,8 @@
     "angular-bootstrap": "^2.4.0",
     "socket.io": "^1.7.2",
     "socket.io-client": "^1.7.2",
-    "angular-dateParser": "^1.1.1"
+    "angular-dateParser": "^1.1.1",
+    "angular-ui-notification": "^0.3.5",
+    "angular-webstorage": "^0.14.0"
   }
 }

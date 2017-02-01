@@ -3,12 +3,23 @@
 function controllerAddUserModal($scope, $http, $uibModalInstance,  data, utils, $rootScope){
 
   $scope.name= data._source.name;
+
+
+  $scope.showSubmit = false;
+
+  $scope.$watchCollection('form', function (_old, _new){
+
+
+    if ($scope.form.users.length > 0){
+      return $scope.showSubmit = true;
+    }
+
+    $scope.showSubmit = false;
+
+  })
+
   $scope.add = function (string){
 
-
-    // add existing users
-    //
-    //
     var form = angular.copy($scope.form);
 
     if (form.users.length < 1)  {
@@ -27,7 +38,9 @@ function controllerAddUserModal($scope, $http, $uibModalInstance,  data, utils, 
           "doc" : d
     };
 
-    utils.updateRecord(id, requestData, function (res){
+    utils.updateRecord(id, requestData, function (err, res){
+
+      if (err) return console.error(err);
 
       $rootScope.$emit('sar::updateRecord', { request :  requestData, response : res});
 
@@ -40,28 +53,27 @@ function controllerAddUserModal($scope, $http, $uibModalInstance,  data, utils, 
 
     var requestData = {
       "script" : {
-          "inline": "ctx._source.users.add(params.user)",
+          "inline": "ctx._source.users += user",
           "params" : {
               "user" : user
           }
       }
     };
 
-    utils.updateRecord(id, requestData, function (res){
+    utils.updateRecord(id, requestData, function (err, res){
+      if (err) return console.error(err);
 
-      if (res.status >= 200 && res.status < 300){
+      console.log('Need to remove', user , ' from list.. ');
 
-        console.log('Need to remove', user , ' from list.. ');
-
-        $scope.activeUsers.forEach(function (item, key){
-          if (item.name === user){
-            $scope.activeUsers.splice(key, 1);
-          }
-        });
+      $scope.activeUsers.forEach(function (item, key){
+        if (item.name === user){
+          $scope.activeUsers.splice(key, 1);
+        }
+      });
 
 
-        $rootScope.$emit('sar::updateRecord', { request :  requestData, response : res});
-      }
+      $rootScope.$emit('sar::updateRecord', { request :  requestData, response : res});
+
 
 
     });
@@ -89,15 +101,16 @@ function controllerAddUserModal($scope, $http, $uibModalInstance,  data, utils, 
 
   function fetchUsers(){
     var users = [];
-    utils.fetchAggrigate('users', function (res){
-      if (res.status == 200){
-        users = utils.getBucketsKeys(res.data.aggregations);
-        users = removeAlreadyRegistered( users, data._source.users);
+    utils.fetchAggrigate('users', function (err, res){
+      if (err) return console.error(err);
 
-        $scope.users = utils.parseTags(users);
+      users = utils.getBucketsKeys(res.data.aggregations);
+      users = removeAlreadyRegistered( users, data._source.users);
 
-        $scope.activeUsers = $scope.users.slice(0,15);
-      }
+      $scope.users = utils.parseTags(users);
+
+      $scope.activeUsers = $scope.users.slice(0,15);
+
     });
   }
 

@@ -10,9 +10,9 @@
     <link rel="stylesheet" href="lib/css/bootstrap.min.css">
     <link rel="stylesheet" href="lib/css/font-awesome.min.css">
     <link rel="stylesheet" href="lib/css/select.min.css">
+    <link rel="stylesheet" href="lib/css/angular-ui-notification.min.css">
 
     <link rel="stylesheet" href="dist/css/application.min.css">
-
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -34,6 +34,9 @@
               <input type="text" class="form-control" ng-model="queryString" placeholder="Search">
             </div>
           </form>
+          <form class="navbar-form navbar-left" role="search">
+            <button ng-click="syncRecords()" type="submit" class="btn btn-warning" ng-show="showSyncButton">Sync <span class="label label-danger">{{recordsToSyncCount}}</span></button>
+          </form>
         </div><!-- /.navbar-collapse -->
       </div>
     </nav>
@@ -43,13 +46,15 @@
         <div class="col-md-12">
           <div class="" ng-repeat="item in activity | orderBy:'epoch':true  | filter:queryString">
 
-            <div class="panel panel-default">
+            <div class="panel" ng-class="(item._source.offline) ? 'panel-warning' : 'panel-default'" >
               <div class="panel-heading">
                 <h3 class="panel-title">
                   {{ item._source.name }} - {{ item._source.timestamp | date:'dd.MM.yyyy HH:mm' }}
                   <span class="label label-danger">{{item._source.hours}} klst</span>
                   <div class="pull-right">
-                    <button uib-tooltip="Breyta færslu" type="button" class="btn btn-warning btn-xs" name="button" ng-click="openCreateModal(item)"><i class="fa fa-wrench"></i></button>
+                    <button ng-show="item._source.offline" uib-tooltip="Sync" type="button" class="btn btn-xs" ng-class="(item.syncError) ? 'btn-danger' : 'btn-warning'" name="button" ng-click="syncRecord(item)" ng-disabled="item.syncing"><i class="fa fa-refresh" ng-class="(item.syncing) ? 'fa-spin' : ''"></i></button>
+
+                    <button ng-hide="item._source.offline" uib-tooltip="Breyta færslu" type="button" class="btn btn-warning btn-xs" name="button" ng-click="openCreateModal(item)"><i class="fa fa-wrench"></i></button>
                     <button uib-tooltip="Eyða færslu" type="button" class="btn btn-danger btn-xs" name="button" ng-click="deleteRecord(item._id, item)"><i class="fa fa-remove"></i></button>
                     <button uib-tooltip="Bæta notenda við færslu" type="button" name="button" class="btn-primary btn btn-xs" ng-click="addUser(item)"><i class="fa fa-plus"></i></button>
 

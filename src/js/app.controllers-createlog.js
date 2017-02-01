@@ -64,21 +64,25 @@ function controllerCreateLog($scope, $http, $timeout, $rootScope, utils, $uibMod
 
   function fetchUsers(){
     var users = [];
-    utils.fetchAggrigate('users', function (res){
-      if (res.status == 200){
-        users = utils.getBucketsKeys(res.data.aggregations);
-        $scope.users = utils.parseTags(users);
-      }
+    utils.fetchAggrigate('users', function (err, res){
+
+      if (err) return console.error('Error', err);
+
+      users = utils.getBucketsKeys(res.data.aggregations);
+      $scope.users = utils.parseTags(users);
+
     });
   }
 
   function fetchTags(){
     var tags = [];
-    utils.fetchAggrigate('tags', function (res){
-      if (res.status == 200){
-        tags = utils.getBucketsKeys(res.data.aggregations);
-        $scope.tags = utils.parseTags(tags);
-      }
+    utils.fetchAggrigate('tags', function (err, res){
+
+      if (err) return console.error('Error', err);
+
+      tags = utils.getBucketsKeys(res.data.aggregations);
+      $scope.tags = utils.parseTags(tags);
+
     });
   }
 
@@ -97,7 +101,6 @@ function controllerCreateLog($scope, $http, $timeout, $rootScope, utils, $uibMod
 
     $scope.isPosting = true;
 
-
     if (!$scope.form.created){
       $scope.form.created = new Date();
     }
@@ -107,16 +110,21 @@ function controllerCreateLog($scope, $http, $timeout, $rootScope, utils, $uibMod
     $scope.form.epoch = new Date().getTime();
 
     var postData = utils.transFormTags($scope.form);
-    utils.submitElasticsearch(postData, id, function (res){
-      if (res.status >= 200 && res.status < 300){
+    utils.submitElasticsearch(postData, id, function (err, res){
+      if (err){
+        $rootScope.$emit('sar::postError', {data : postData, id : id });
         $uibModalInstance.close();
-
-        if ( $scope.editRecord ){
-          $rootScope.$emit('sar::updateRecord', { request: postData, response: res });
-        }else{
-          $rootScope.$emit('sar::newRecord',    { request: postData, response: res });
-        }
+        return console.error('Error', err);
       }
+
+      $uibModalInstance.close();
+
+      if ( $scope.editRecord ){
+        $rootScope.$emit('sar::updateRecord', { request: postData, response: res });
+      }else{
+        $rootScope.$emit('sar::newRecord',    { request: postData, response: res });
+      }
+
     });
   }
 

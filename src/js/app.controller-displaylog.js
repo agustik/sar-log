@@ -1,31 +1,126 @@
 
 
-function controllerDisplayLog($scope, $http, $timeout, $rootScope, $uibModal, utils){
+function controllerDisplayLog($scope, $http, $timeout, $rootScope, $uibModal, utils, webStorage){
 
 
   $scope.activity = [];
 
 
-  utils.fetchLog(function (res){
-    if (res.status >= 200 && res.status < 300 ){
-      $scope.activity = res.data.hits.hits;
+  console.log($rootScope.recordsToSync);
+
+  $scope.showSyncButton = false;
+
+  $scope.recordsToSyncCount = $rootScope.recordsToSync.length;
+
+  if ($rootScope.recordsToSync.length > 0){
+    $scope.showSyncButton = true;
+  }
+
+  $rootScope.$watchCollection('recordsToSync', function (_new, _old){
+
+    if (_new.length > 0){
+      $scope.showSyncButton = true;
+    }else{
+      $scope.showSyncButton = false;
+
     }
+    $scope.recordsToSyncCount = _new.length;
+  })
+
+  $scope.syncRecords = function(){
+    var modalInstance = $uibModal.open({
+      templateUrl: 'templates/syncRecords.html',
+      controller: 'syncRecords',
+      size : 'lg'
+    });
+
+    modalInstance.result.then(function (selectedItem) {
+      }, function () {
+    });
+  };
+
+  $scope.syncRecord = function (record){
+
+
+    var postData = angular.copy(record._source);
+
+    delete postData.offline;
+
+
+    if (record.synced) return console.log('Already synced');
+    record.syncing = true;
+
+    utils.syncRecord(postData, function (err, res){
+      if (err){
+        record.syncing = false;
+        record.syncError = true;
+        return console.error('Error', err);
+      }
+      record.synced = true;
+    })
+  };
+
+  $rootScope.$on('server::reconnect', fetchAllData);
+
+
+  $rootScope.$on('server::reload', fetchAllData);
+
+
+  $rootScope.$on('sar::postError', fetchAllData);
+
+
+  $rootScope.$on('sar::removeRecord', function (ev, record){
+    var index = utils.findRecordIndexByEpoch($scope.activity, record.epoch);
+    $scope.activity.splice(index, 1);
   });
 
+  function fetchAllData(){
+    utils.fetchLog(function (err, res){
+      if (err) return console.error('Error', err);
+
+      var records = res.data.hits.hits;
+
+      var offlineRecords = webStorage.get( $rootScope.recordsToSyncKey) || [];
+
+
+      offlineRecords.forEach(function (item){
+        console.log(item);
+
+        item.data.offline = true;
+
+
+        var obj = {};
+
+        obj._source = item.data;
+
+        records.push(obj);
+
+      });
+
+      console.log(records)
+
+
+      $scope.activity = records;
+
+    });
+  }
+
+
+  fetchAllData();
+
   $rootScope.$on('sar::newRecord', function (ev, eventData){
-    utils.fetchSingleRecord(eventData.response.data._id, function (res){
-      if (res.status >= 200 && res.status < 300 ){
-        $scope.activity.push(res.data);
-      }
+    utils.fetchSingleRecord(eventData.response.data._id, function (err, res){
+      if (err) return console.error('Error', err);
+      $scope.activity.push(res.data);
     });
   });
 
   $rootScope.$on('sar::updateRecord', function (ev, eventData){
-    utils.fetchSingleRecord(eventData.response.data._id, function (res){
-      if (res.status >= 200 && res.status < 300 ){
-        var index = utils.findRecordIndexByID($scope.activity, eventData.response.data._id);
-        $scope.activity[index]= res.data;
-      }
+    utils.fetchSingleRecord(eventData.response.data._id, function (err, res){
+      if (err) return console.error('Error', err);
+
+      var index = utils.findRecordIndexByID($scope.activity, eventData.response.data._id);
+      $scope.activity[index]= res.data;
     });
   });
 
@@ -54,12 +149,14 @@ function controllerDisplayLog($scope, $http, $timeout, $rootScope, $uibModal, ut
     });
 
     cf.result.then(function (){
-      utils.deleteRecord(id, function (res){
-        if (res.status >= 200 && res.status < 300){
-          var index = utils.findRecordIndexByID($scope.activity, id);
-          $scope.activity.splice(index, 1);
-        }
-      })
+      utils.deleteRecord(id, function (err, res){
+
+        if (err) return console.error('Error', err);
+
+
+        var index = utils.findRecordIndexByID($scope.activity, id);
+        $scope.activity.splice(index, 1);
+      });
     }, function (){
       // dont do it..
     });

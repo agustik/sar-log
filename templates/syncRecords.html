@@ -1,0 +1,25 @@
+<div>
+    <div class="modal-header">
+        <h3 class="modal-title" id="modal-title">Sync</h3>
+    </div>
+    <div class="modal-body" id="modal-body">
+      <div class="">
+        <h4>Skráningar sem þarf að synca</h4>
+        <div class="">
+          <div class="panel panel-default"  ng-repeat="(key, item) in recordsToSync" >
+            <div class="panel-body">
+              {{item.data.name}}
+              <div class="pull-right">
+                <button class="btn btn-block btn-warning" ng-class="(item.syncError) ? 'btn-danger' : 'btn-warning'" ng-hide="item.synced" ng-click="syncRecord(item, key)" ng-disabled="item.syncing"><i class="fa fa-refresh" ng-class="(item.syncing) ? 'fa-spin' : ''" ></i></button>
+                <button class="btn btn-block btn-success" disabled ng-show="item.synced"><i class="fa fa-check"></i></button>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-warning" type="button" ng-click="close()">Loka</button>
+    </div>
+</div>

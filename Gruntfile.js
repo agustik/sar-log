@@ -14,7 +14,9 @@ module.exports = function (grunt) {
 
             "lib/js/ui-bootstrap.min.js",
             "lib/js/ui-bootstrap-tpls.min.js",
-            'lib/js/socket.io.min.js'
+            'lib/js/socket.io.min.js',
+            'lib/js/angular-ui-notification.min.js',
+            'lib/js/angular-webstorage.min.js'
         ],
           dest : 'dist/js/libs.js'
         }
@@ -104,6 +106,14 @@ module.exports = function (grunt) {
             ], dest: 'lib/js/', filter: 'isFile'},
 
 
+            {expand: true, flatten:true, src: [
+              'bower_components/angular-ui-notification/dist/angular-ui-notification.min.js'
+            ], dest: 'lib/js/', filter: 'isFile'},
+
+            {expand: true, flatten:true, src: [
+              'bower_components/angular-ui-notification/dist/angular-ui-notification.min.css'
+            ], dest: 'lib/css/', filter: 'isFile'},
+
             // // UI Select
             // {expand: true, flatten:true, src: [
             //   'bower_components/ui-select/dist/*.min.css'
@@ -130,7 +140,7 @@ module.exports = function (grunt) {
             // {expand: true, flatten:true, src: ['bower_components/angular-cookies/angular-cookies.min.js'], dest: 'lib/js/', filter: 'isFile'}
 
             // Angular Webstorage
-            //{expand: true, flatten:true, src: ['bower_components/angular-webstorage/angular-webstorage.min.js'], dest: 'lib/js/', filter: 'isFile'}
+            {expand: true, flatten:true, src: ['bower_components/angular-webstorage/angular-webstorage.min.js'], dest: 'lib/js/', filter: 'isFile'}
           ],
         },
       },

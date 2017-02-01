@@ -8,19 +8,38 @@ var server = restify.createServer({
 
 var io = socketio.listen(server.server);
 
-server.get('/', function indexHTML(req, res, next) {
-    fs.readFile(__dirname + '/index.html', function (err, data) {
-        if (err) {
-            next(err);
-            return;
-        }
 
-        res.setHeader('Content-Type', 'text/html');
-        res.writeHead(200);
-        res.end(data);
-        next();
-    });
-});
+var fs = require('fs');
+
+var path = require('path');
+const BASE = path.normalize(__dirname + '/../');
+
+
+/*
+server.get(/., function indexHTML(req, res, next) {
+  console.log(req.url, BASE);
+
+
+  fs.stat(path.join(BASE, req.url), function (err, stat){
+    if (err){
+      return next(err);
+    }
+    console.log(err, stat)
+    res.setHeader('Content-Type', 'text/html');
+    res.writeHead(200);
+    res.end('asdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdf');
+    return next();
+
+  })
+
+});*/
+
+
+
+server.get(/.*/, restify.serveStatic({
+  directory: BASE,
+  default: 'index.html'
+}));
 
 var clients = {};
 

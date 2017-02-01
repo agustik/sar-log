@@ -1,7 +1,31 @@
-function serviceUtils($http, $rootScope, $uibModal){
+function serviceUtils($http, $rootScope, $uibModal, webStorage, Notification){
 
   function returnName( obj ){
     return obj.name;
+  }
+
+  function deleteFromWebStorage(record){
+    // Use epoch to find record and then delete it from webstorage
+
+
+    var epoch = record.epoch;
+
+    var records = webStorage.get( $rootScope.recordsToSyncKey) || [];
+
+    var recordsToSave = [];
+
+    records.forEach(function (item){
+
+      if (item.data.epoch !== epoch){
+        recordsToSave.push(item);
+      }
+    });
+
+    $rootScope.recordsToSync = recordsToSave;
+
+    webStorage.set( $rootScope.recordsToSyncKey, recordsToSave)
+
+
   }
 
 
@@ -19,12 +43,49 @@ function serviceUtils($http, $rootScope, $uibModal){
          }
        }
      };
+
+
+     var offlineKey = field + '::fetchAggrigate';
+
      var url =  [ $rootScope.es_server , $rootScope.es_index, $rootScope.es_type, '_search' ].join('/');
      $http({
        method : 'POST',
        url : url,
        data : data
-     }).then(callback)
+     }).then(function success(res){
+       console.log(res);
+       if (res.status > 300) return callback(res);
+
+       webStorage.set(offlineKey, res);
+
+       callback(null, res);
+
+     }, function (err){
+
+       Notification.warning('Could not fetch from server, using local cache');
+
+       var res = webStorage.get(offlineKey)
+
+       if (!res) return callback(err);
+
+       callback(null, res);
+     });
+   },
+
+   syncRecord: function (data, callback){
+     this.submitElasticsearch(data, "", function (err, res){
+
+       if (err) return callback(err);
+
+
+       deleteFromWebStorage(data);
+       $rootScope.$emit('sar::removeRecord', data);
+       $rootScope.$emit('sar::newRecord', { request: data, response: res });
+
+       callback(null, res);
+
+
+     });
    },
    submitElasticsearch : function(data, id, callback){
      var url = [ $rootScope.es_server , $rootScope.es_index, $rootScope.es_type, id ].join('/');
@@ -32,23 +93,59 @@ function serviceUtils($http, $rootScope, $uibModal){
        method : 'POST',
        url : url,
        data : data
-     }).then(callback);
+     }).then(function success(res){
+
+       if (res.status > 300) return callback(res);
+
+       callback(null, res);
+
+     }, callback);
    },
    fetchLog : function(callback){
       var url =  [ $rootScope.es_server , $rootScope.es_index, $rootScope.es_type, '_search' ].join('/');
       var query = ['q=*', 'size=200' ].join('&');
       var request = [url, query].join('?');
+
+
+      var offlineFetchLogKey = 'sar::fetchLogKey';
       $http({
         method : 'GET',
         url : request,
-      }).then(callback);
+      }).then(function success(res){
+
+        if (res.status > 300) return callback(res);
+
+
+        webStorage.set(offlineFetchLogKey, res);
+
+        callback(null, res);
+
+      }, function (err){
+
+        Notification.warning('Could not fetch from server, using local cache');
+
+
+        var offlineCache = webStorage.get(offlineFetchLogKey);
+
+        if (!offlineCache) return callback(err);
+
+        callback(null, offlineCache);
+
+
+      });
     },
     fetchSingleRecord: function(id, callback){
       var url =  [ $rootScope.es_server , $rootScope.es_index, $rootScope.es_type, id ].join('/');
       $http({
         method : 'GET',
         url : url,
-      }).then(callback);
+      }).then(function success(res){
+
+        if (res.status > 300) return callback(res);
+
+        callback(null, res);
+
+      }, callback);
 
     },
     getBucketsKeys: function(aggregations){
@@ -65,14 +162,26 @@ function serviceUtils($http, $rootScope, $uibModal){
         method : 'POST',
         url : url,
         data : data
-      }).then(callback);
+      }).then(function success(res){
+
+        if (res.status > 300) return callback(res);
+
+        callback(null, res);
+
+      }, callback);
     },
     deleteRecord : function (id, callback){
       var url =  [ $rootScope.es_server , $rootScope.es_index, $rootScope.es_type, id ].join('/');
       $http({
         method : 'DELETE',
         url : url
-      }).then(callback);
+      }).then(function success(res){
+
+        if (res.status > 300) return callback(res);
+
+        callback(null, res);
+
+      }, callback);
 
     },
     transFormTags : function(formData){
@@ -91,6 +200,15 @@ function serviceUtils($http, $rootScope, $uibModal){
       var index = null;
       arr.forEach(function (item, key){
         if (item._id === id) {
+          index = key;
+        }
+      });
+      return index;
+    },
+    findRecordIndexByEpoch : function(arr, epoch){
+      var index = null;
+      arr.forEach(function (item, key){
+        if (item._source.epoch === epoch) {
           index = key;
         }
       });
