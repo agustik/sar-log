@@ -5,9 +5,6 @@ function controllerDisplayLog($scope, $http, $timeout, $rootScope, $uibModal, ut
 
   $scope.activity = [];
 
-
-  console.log($rootScope.recordsToSync);
-
   $scope.showSyncButton = false;
 
   $scope.recordsToSyncCount = $rootScope.recordsToSync.length;
@@ -84,7 +81,6 @@ function controllerDisplayLog($scope, $http, $timeout, $rootScope, $uibModal, ut
 
 
       offlineRecords.forEach(function (item){
-        console.log(item);
 
         item.data.offline = true;
 
@@ -96,8 +92,6 @@ function controllerDisplayLog($scope, $http, $timeout, $rootScope, $uibModal, ut
         records.push(obj);
 
       });
-
-      console.log(records)
 
 
       $scope.activity = records;

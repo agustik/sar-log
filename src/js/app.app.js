@@ -17,7 +17,13 @@ app.run([ '$rootScope', '$log', 'Notification', 'webStorage', function ($rootSco
   $rootScope.recordsToSyncKey = 'sar::recordsToSync';
 
 
-  $rootScope.recordsToSync = webStorage.get($rootScope.recordsToSyncKey)
+  var _recordsToSync = webStorage.get($rootScope.recordsToSyncKey);
+
+  if (!Array.isArray(_recordsToSync)){
+    $rootScope.recordsToSync = [];
+  }else{
+    $rootScope.recordsToSync = _recordsToSync;
+  }
 
   $rootScope.eventsToProxy = ['sar::newRecord', 'sar::updateRecord'];
 
@@ -63,8 +69,6 @@ app.run([ '$rootScope', '$log', 'Notification', 'webStorage', function ($rootSco
     var recordsToSync = webStorage.get($rootScope.recordsToSyncKey) || [];
 
     recordsToSync.push(eventData);
-
-
     $rootScope.recordsToSync = recordsToSync;
 
     webStorage.set($rootScope.recordsToSyncKey, recordsToSync);
