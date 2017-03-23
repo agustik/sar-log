@@ -7,6 +7,14 @@ function controllerDisplayLog($scope, $http, $timeout, $rootScope, $uibModal, ut
 
   $scope.showSyncButton = false;
 
+  $scope.order = "_source.epoch";
+
+  $scope.orderFriendlyName = "Skráningu";
+
+
+  $scope.asc = true;
+
+
   $scope.recordsToSyncCount = $rootScope.recordsToSync.length;
 
   if ($rootScope.recordsToSync.length > 0){
@@ -23,6 +31,14 @@ function controllerDisplayLog($scope, $http, $timeout, $rootScope, $uibModal, ut
     }
     $scope.recordsToSyncCount = _new.length;
   })
+
+  $scope.setOrder = function (order, friendly){
+
+    if (order === $scope.order) $scope.asc = !$scope.asc;
+
+    $scope.order = order;
+    $scope.orderFriendlyName = friendly;
+  }
 
   $scope.syncRecords = function(){
     var modalInstance = $uibModal.open({
@@ -92,6 +108,7 @@ function controllerDisplayLog($scope, $http, $timeout, $rootScope, $uibModal, ut
         records.push(obj);
 
       });
+
 
 
       $scope.activity = records;

@@ -5,7 +5,7 @@
   "authors": [
     "Ágúst Ingi Kjartansson <agust.ingi.kjartansson@gmail.com>"
   ],
-  "license": "ISC",
+  "license": "GPL-3.0",
   "homepage": "",
   "ignore": [
     "**/.*",

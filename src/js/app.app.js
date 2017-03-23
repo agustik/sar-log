@@ -107,3 +107,4 @@ app.controller('syncRecords', ['$scope', '$rootScope', 'webStorage', 'utils', '$
 app.controller('confirmModal', ['$scope', '$uibModalInstance','data', controllerConfirmModal]);
 
 app.service('utils', ['$http','$rootScope', '$uibModal', 'webStorage', 'Notification', serviceUtils]);
+app.filter('orderByObject', [filterOrderByObject]);

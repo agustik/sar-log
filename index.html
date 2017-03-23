@@ -34,9 +34,23 @@
               <input type="text" class="form-control" ng-model="queryString" placeholder="Search">
             </div>
           </form>
+          <ul class="nav navbar-nav" >
+            <li><a href="#">Sortering:</a> </li>
+            <li class="dropdown"  uib-dropdown>
+              <a href="#" class="dropdown-toggle"  uib-dropdown-toggle data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{orderFriendlyName}} <span class="caret"></span></a>
+              <ul class="dropdown-menu" uib-dropdown-menu >
+                <li><a ng-click="setOrder('_source.epoch', 'Skráningu')" href="#">Skráningu</a></li>
+                <li><a ng-click="setOrder('_source.timestamp', 'Dagsetningu')" href="#">Dagsetningu</a></li>
+                <li><a ng-click="setOrder('_source.name', 'Titil')" href="#">Titil</a></li>
+                <li><a ng-click="setOrder('_source.hours', 'Tíma')" href="#">Tíma</a></li>
+              </ul>
+            </li>
+          </ul>
           <form class="navbar-form navbar-left" role="search">
             <button ng-click="syncRecords()" type="submit" class="btn btn-warning" ng-show="showSyncButton">Sync <span class="label label-danger">{{recordsToSyncCount}}</span></button>
           </form>
+
+
         </div><!-- /.navbar-collapse -->
       </div>
     </nav>
@@ -44,9 +58,9 @@
     <div class="container-fluid">
 
         <div class="col-md-12">
-          <div class="" ng-repeat="item in activity | orderBy:'epoch':true  | filter:queryString">
+          <div class="" ng-repeat="item in activity | orderByObject:order:asc | filter:queryString track by $index  ">
 
-            <div class="panel" ng-class="(item._source.offline) ? 'panel-warning' : 'panel-default'" >
+             <div class="panel" ng-class="(item._source.offline) ? 'panel-warning' : 'panel-default'" >
               <div class="panel-heading">
                 <h3 class="panel-title">
                   {{ item._source.name }} - {{ item._source.timestamp | date:'dd.MM.yyyy HH:mm' }}
@@ -65,13 +79,13 @@
                 <div class="">
 
                 </div>
-                <!-- List group -->
+
                 <ul class="list-group">
                   <li class="list-group-item">
-                      <span ng-repeat="user in item._source.users"> <span class="label label-success">{{ user }}</span> </span>
+                      <span ng-repeat="user in item._source.users track by $index"> <span class="label label-success">{{ user }}</span> </span>
                   </li>
                   <li class="list-group-item">
-                    <span ng-repeat="tag in item._source.tags"> <span class="label label-info">{{ tag }}</span></span>
+                    <span ng-repeat="tag in item._source.tags track by $index"> <span class="label label-info">{{ tag }}</span></span>
                   </li>
                   <li class="list-group-item" ng-hide="(!item._source.description)">Lýsing: {{item._source.description}}</li>
                 </ul>
