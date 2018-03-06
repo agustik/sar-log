@@ -8,6 +8,15 @@
         "hours": {
           "type": "long"
         },
+        "total_hours": {
+          "type": "long"
+        },
+        "total_users": {
+          "type": "long"
+        },
+        "total_tags": {
+          "type": "long"
+        },
         "name": {
           "type": "text",
           "fielddata": true,

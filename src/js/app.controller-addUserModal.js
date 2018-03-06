@@ -70,10 +70,11 @@ function controllerAddUserModal($scope, $http, $uibModalInstance,  data, utils, 
 
       var requestData = {
         "script" : {
-            "inline": "ctx._source.users.add(params.user); ctx._source.total_hours=params.total_hours",
+            "inline": "ctx._source.users.add(params.user); ctx._source.total_hours=params.total_hours; ctx._source.total_users=params.total_users",
             "params" : {
                 "user" : user,
-                "total_hours" : total_hours
+                "total_hours" : total_hours,
+                "total_users" : userCount
             }
         }
       };

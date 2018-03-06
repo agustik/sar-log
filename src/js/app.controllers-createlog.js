@@ -110,6 +110,9 @@ function controllerCreateLog($scope, $http, $timeout, $rootScope, utils, $uibMod
     $scope.form.edit = new Date();
 
     $scope.form.epoch = new Date().getTime();
+    $scope.form.total_users = $scope.form.users.length;
+    $scope.form.total_tags = $scope.form.tags.length;
+    
 
     $scope.form.user_ids = $scope.form.user_ids  || [];
     $scope.form.user_ids = $scope.form.users.map(function (user){
