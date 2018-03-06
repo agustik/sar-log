@@ -64,7 +64,7 @@
               <div class="panel-heading">
                 <h3 class="panel-title">
                   {{ item._source.name }} - {{ item._source.timestamp | date:'dd.MM.yyyy HH:mm' }}
-                  <span class="label label-danger">{{item._source.hours}} klst</span>
+                  <span class="label label-info">{{item._source.hours}}/{{item._source.total_hours}} klst</span>
                   <div class="pull-right">
                     <button ng-show="item._source.offline" uib-tooltip="Sync" type="button" class="btn btn-xs" ng-class="(item.syncError) ? 'btn-danger' : 'btn-warning'" name="button" ng-click="syncRecord(item)" ng-disabled="item.syncing"><i class="fa fa-refresh" ng-class="(item.syncing) ? 'fa-spin' : ''"></i></button>
 

@@ -52,35 +52,54 @@ function controllerAddUserModal($scope, $http, $uibModalInstance,  data, utils, 
   };
 
   $scope.quickAdd = function (user){
+
     var id = data._id;
-
-    var requestData = {
-      "script" : {
-          "inline": "ctx._source.users.add(params.user)",
-          "params" : {
-              "user" : user
-          }
-      }
-    };
-
-    utils.updateRecord(id, requestData, function (err, res){
+    return utils.fetchSingleRecord(id, function (err, response){
       if (err){
         Notification.warning('Could not add user: ' + user );
         return console.error(err);
       }
 
-      Notification.success('Added ' + user + ' to log')
+      var record = response.data;
 
-      console.log('Need to remove', user , ' from list.. ');
+      var userCount = record._source.users.length || 0 ;
 
-      $scope.activeUsers.forEach(function (item, key){
-        if (item.name === user){
-          $scope.activeUsers.splice(key, 1);
+      userCount++;
+
+      var total_hours = (userCount * record._source.hours);
+
+      var requestData = {
+        "script" : {
+            "inline": "ctx._source.users.add(params.user); ctx._source.total_hours=params.total_hours",
+            "params" : {
+                "user" : user,
+                "total_hours" : total_hours
+            }
         }
+      };
+
+      utils.updateRecord(id, requestData, function (err, res){
+        if (err){
+          Notification.warning('Could not add user: ' + user );
+          return console.error(err);
+        }
+
+        Notification.success('Added ' + user + ' to log')
+
+        console.log('Need to remove', user , ' from list.. ');
+
+        $scope.activeUsers.forEach(function (item, key){
+          if (item.name === user){
+            $scope.activeUsers.splice(key, 1);
+          }
+        });
+
+        $rootScope.$emit('sar::updateRecord', { request :  requestData, response : res});
       });
 
-      $rootScope.$emit('sar::updateRecord', { request :  requestData, response : res});
     });
+
+
   };
 
   $scope.users = [];
