@@ -7,7 +7,7 @@ function controllerDisplayLog($scope, $http, $timeout, $rootScope, $uibModal, ut
 
   $scope.showSyncButton = false;
 
-  $scope.order = "_source.epoch";
+  $scope.order = "_source.timestamp";
 
   $scope.orderFriendlyName = "Skráningu";
 
