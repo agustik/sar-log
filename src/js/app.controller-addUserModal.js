@@ -1,6 +1,6 @@
 
 
-function controllerAddUserModal($scope, $http, $uibModalInstance,  data, utils, $rootScope){
+function controllerAddUserModal($scope, $http, $uibModalInstance,  data, utils, $rootScope, Notification){
 
   $scope.name= data._source.name;
 
@@ -40,7 +40,10 @@ function controllerAddUserModal($scope, $http, $uibModalInstance,  data, utils, 
 
     utils.updateRecord(id, requestData, function (err, res){
 
-      if (err) return console.error(err);
+      if (err){
+        Notification.warning('Could not update record');
+        return console.error(err);
+      }
 
       $rootScope.$emit('sar::updateRecord', { request :  requestData, response : res});
 
@@ -53,7 +56,7 @@ function controllerAddUserModal($scope, $http, $uibModalInstance,  data, utils, 
 
     var requestData = {
       "script" : {
-          "inline": "ctx._source.users += user",
+          "inline": "ctx._source.users.add(params.user)",
           "params" : {
               "user" : user
           }
@@ -61,7 +64,12 @@ function controllerAddUserModal($scope, $http, $uibModalInstance,  data, utils, 
     };
 
     utils.updateRecord(id, requestData, function (err, res){
-      if (err) return console.error(err);
+      if (err){
+        Notification.warning('Could not add user: ' + user );
+        return console.error(err);
+      }
+
+      Notification.success('Added ' + user + ' to log')
 
       console.log('Need to remove', user , ' from list.. ');
 
@@ -71,11 +79,7 @@ function controllerAddUserModal($scope, $http, $uibModalInstance,  data, utils, 
         }
       });
 
-
       $rootScope.$emit('sar::updateRecord', { request :  requestData, response : res});
-
-
-
     });
   };
 

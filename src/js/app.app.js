@@ -25,7 +25,7 @@ app.run([ '$rootScope', '$log', 'Notification', 'webStorage', function ($rootSco
     $rootScope.recordsToSync = _recordsToSync;
   }
 
-  $rootScope.eventsToProxy = ['sar::newRecord', 'sar::updateRecord'];
+  $rootScope.eventsToProxy = ['sar::newRecord', 'sar::updateRecord', 'sar::deleteRecord'];
 
 
   $rootScope.config = config;
@@ -64,8 +64,6 @@ app.run([ '$rootScope', '$log', 'Notification', 'webStorage', function ($rootSco
     console.log('sar::postError', eventData);
     Notification.warning('Gat ekki búið til skráningu, vista skráning til þess að senda síðar');
 
-
-
     var recordsToSync = webStorage.get($rootScope.recordsToSyncKey) || [];
 
     recordsToSync.push(eventData);
@@ -75,7 +73,6 @@ app.run([ '$rootScope', '$log', 'Notification', 'webStorage', function ($rootSco
 
 
   });
-
 
   $rootScope.eventsToProxy.forEach(function (eventName){
     $rootScope.$on(eventName, function (ev, eventData, type){
@@ -99,8 +96,8 @@ app.config(['NotificationProvider', function (NotificationProvider){
 }]);
 
 app.controller('createLog', ['$scope', '$http', '$timeout','$rootScope', 'utils',  '$uibModalInstance', 'data', controllerCreateLog ]);
-app.controller('displayLog', ['$scope', '$http', '$timeout','$rootScope', '$uibModal', 'utils', 'webStorage', controllerDisplayLog ]);
-app.controller('addUserModal', ['$scope', '$http', '$uibModalInstance','data','utils', '$rootScope', controllerAddUserModal]);
+app.controller('displayLog', ['$scope', '$http', '$timeout','$rootScope', '$uibModal', 'utils', 'webStorage', 'Notification', controllerDisplayLog ]);
+app.controller('addUserModal', ['$scope', '$http', '$uibModalInstance','data','utils', '$rootScope', 'Notification', controllerAddUserModal]);
 
 app.controller('syncRecords', ['$scope', '$rootScope', 'webStorage', 'utils', '$uibModalInstance', 'Notification',  controllerSyncRecords]);
 

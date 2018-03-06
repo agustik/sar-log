@@ -6,7 +6,7 @@
     <div class="modal-body" id="modal-body">
       <form class="form-horizontal" name="createLog" ng-submit="postLog()">
 
-        <div class="form-group" ng-class="( createLog.name.$touched && createLog.name.$error.required) ? 'has-error' : ''">
+        <div class="form-group" ng-class="((submitted) && createLog.name.$error.required) ? 'has-error' : ''">
           <label >Lýsing</label>
           <input name="name" required type="text" class="form-control" placeholder="Lýsing" ng-model="form.name">
         </div>
@@ -29,8 +29,8 @@
         </div>
 
         <div class="form-group">
-          <label >Tímar</label>
-          <input only-digits  ng-model="form.hours" value="1" name="hours" type="number" class="form-control" placeholder="Tímar">
+          <label>Tímar</label>
+          <input only-digits ng-model="form.hours" value="1" name="hours" type="number" class="form-control" placeholder="Tímar">
         </div>
 
         <div class="form-group ">
@@ -39,16 +39,17 @@
             tagging="createTag"
             close-on-select="false"
             title="Veldu tögg">
-            <ui-select-match placeholder="Veldu tögg">{{$item.name}}</ui-select-match>
+            <ui-select-match placeholder="Veldu tögg">{{$item.name.toLowerCase()}}</ui-select-match>
             <ui-select-choices repeat="item in tags | filter:$select.search:false">
               {{item.name}}
             </ui-select-choices>
           </ui-select>
         </div>
 
-        <div class="form-group ">
+        <div class="form-group" ng-class="((submitted) && createLog.users.$error.required) ? 'has-error' : ''">
           <ui-select multiple theme="bootstrap"
-            tagging="createTag"
+            required
+            tagging="createUser"
             close-on-select="false"
             ng-model="form.users"
             title="Veldu björgunarmenn">

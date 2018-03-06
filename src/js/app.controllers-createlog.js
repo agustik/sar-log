@@ -28,6 +28,11 @@ function controllerCreateLog($scope, $http, $timeout, $rootScope, utils, $uibMod
   $scope.tags = [];
 
   $scope.createTag = function (string){
+    if (typeof string !== 'string') return {name : ""};
+    return { name : string.toLowerCase() };
+  };
+
+  $scope.createUser = function (string){
     return { name : string };
   };
 
@@ -50,10 +55,6 @@ function controllerCreateLog($scope, $http, $timeout, $rootScope, utils, $uibMod
     return obj;
   }
 
-
-  function createTags(arr){
-
-  }
 
   function defaultForm () {
     return {
@@ -93,8 +94,9 @@ function controllerCreateLog($scope, $http, $timeout, $rootScope, utils, $uibMod
   $scope.close = function (){
     $uibModalInstance.close();
   };
-
+  $scope.submitted = false;
   $scope.postLog = function (){
+    $scope.submitted = true;
     if ($scope.createLog.$invalid) return;
 
     var id = $scope.recordID;
@@ -108,6 +110,13 @@ function controllerCreateLog($scope, $http, $timeout, $rootScope, utils, $uibMod
     $scope.form.edit = new Date();
 
     $scope.form.epoch = new Date().getTime();
+
+    $scope.form.user_ids = $scope.form.user_ids  || [];
+    $scope.form.user_ids = $scope.form.users.map(function (user){
+      return slug(user.name, {lower: true});
+    });
+
+    $scope.form.total_hours = ( $scope.form.hours * $scope.form.users.length );
 
     var postData = utils.transFormTags($scope.form);
     utils.submitElasticsearch(postData, id, function (err, res){

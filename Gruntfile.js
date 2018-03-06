@@ -11,7 +11,7 @@ module.exports = function (grunt) {
             "lib/js/angular.min.js",
             "lib/js/select.min.js",
             "lib/js/angular-sanitize.min.js",
-
+            "lib/js/slug.js",
             "lib/js/ui-bootstrap.min.js",
             "lib/js/ui-bootstrap-tpls.min.js",
             'lib/js/socket.io.min.js',
@@ -58,6 +58,9 @@ module.exports = function (grunt) {
               'bower_components/bootstrap/dist/css/bootstrap.css.map'
               ], dest: 'lib/css/', filter: 'isFile'},
 
+            {expand: true, flatten:true, src: [
+              'bower_components/slug/slug.js'
+            ], dest: 'lib/js/', filter: 'isFile'},
             // //boostrap js
             // {expand: true, flatten:true, src: [
             //   'bower_components/bootstrap/dist/js/bootstrap.min.js',

@@ -1,7 +1,10 @@
 function serviceUtils($http, $rootScope, $uibModal, webStorage, Notification){
 
   function returnName( obj ){
-    return obj.name;
+
+    if (obj.name) return obj.name;
+
+    return obj;
   }
 
   function deleteFromWebStorage(record){
@@ -38,7 +41,7 @@ function serviceUtils($http, $rootScope, $uibModal, webStorage, Notification){
          "request": {
            "terms": {
              "field": field + ".keyword",
-             "size" : 100
+             "size" : 200
            }
          }
        }
@@ -103,19 +106,30 @@ function serviceUtils($http, $rootScope, $uibModal, webStorage, Notification){
    },
    fetchLog : function(callback){
       var url =  [ $rootScope.es_server , $rootScope.es_index, $rootScope.es_type, '_search' ].join('/');
-      var query = ['q=*', 'size=200' ].join('&');
-      var request = [url, query].join('?');
+      var query = {
+        size:500,
+        sort : [
+          {
+            created : {
+              order : "desc"
+            }
+          }
+        ],
+        query : {
+          match_all : { }
+        }
+      };
+
 
 
       var offlineFetchLogKey = 'sar::fetchLogKey';
       $http({
-        method : 'GET',
-        url : request,
+        method : 'POST',
+        url : url,
+        data: query,
       }).then(function success(res){
 
         if (res.status > 300) return callback(res);
-
-
         webStorage.set(offlineFetchLogKey, res);
 
         callback(null, res);
@@ -178,6 +192,8 @@ function serviceUtils($http, $rootScope, $uibModal, webStorage, Notification){
       }).then(function success(res){
 
         if (res.status > 300) return callback(res);
+
+        $rootScope.$emit('sar::deleteRecord', { id : id });
 
         callback(null, res);
 

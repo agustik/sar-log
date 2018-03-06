@@ -1,6 +1,6 @@
 
 
-function controllerDisplayLog($scope, $http, $timeout, $rootScope, $uibModal, utils, webStorage){
+function controllerDisplayLog($scope, $http, $timeout, $rootScope, $uibModal, utils, webStorage, Notification){
 
 
   $scope.activity = [];
@@ -164,6 +164,7 @@ function controllerDisplayLog($scope, $http, $timeout, $rootScope, $uibModal, ut
 
         if (err) return console.error('Error', err);
 
+        Notification.success('Record deleted');
 
         var index = utils.findRecordIndexByID($scope.activity, id);
         $scope.activity.splice(index, 1);
